@@ -1,23 +1,20 @@
-import fs from 'fs';
-import path from 'path';
-import { createReadStream, createWriteStream } from 'fs';
-import { pipeline } from 'stream/promises';
+const fs = require('fs');
+const path = require('path');
+const { execSync } = require('child_process');
 
-// Use unzipper package or built-in
-const unzipper = await import('unzipper');
-
-const zipPath = '/vercel/share/v0-project/learnhub-export.zip';
-const extractPath = '/vercel/share/v0-project';
-
-console.log('[v0] Extracting ZIP file...');
-
-createReadStream(zipPath)
-  .pipe(unzipper.Extract({ path: extractPath }))
-  .on('close', () => {
-    console.log('[v0] Extraction complete!');
-    process.exit(0);
-  })
-  .on('error', (err) => {
-    console.error('[v0] Extraction error:', err);
-    process.exit(1);
-  });
+try {
+  console.log('[v0] Attempting ZIP extraction...');
+  const zipPath = '/vercel/share/v0-project/learnhub-export.zip';
+  const extractPath = '/vercel/share/v0-project';
+  
+  // Use unzip command
+  execSync(`cd ${extractPath} && unzip -q learnhub-export.zip`);
+  console.log('[v0] Extraction successful!');
+  
+  // List extracted files
+  const files = fs.readdirSync(extractPath);
+  console.log('[v0] Directory contents:', files);
+} catch (error) {
+  console.error('[v0] Error:', error.message);
+  process.exit(1);
+}
